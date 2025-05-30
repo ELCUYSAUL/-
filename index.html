@@ -118,5 +118,22 @@
     <script src="js/products.js"></script>
     <script src="js/sales.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Anuncio de video -->
+<div id="videoAd" class="video-ad">
+  <div class="ad-content">
+    <video id="adVideo" width="640" height="360" controls>
+      <source src="assets/videos/anuncio.webm" type="video/webm">
+      Tu navegador no soporta videos HTML5.
+    </video>
+    <div class="ad-footer">
+      <span id="adCountdown">El anuncio puede cerrarse en 20 segundos</span>
+      <button id="closeAdBtn" disabled>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/ad-system.js"></script>
 </body>
 </html>
+
