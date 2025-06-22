@@ -1,6 +1,6 @@
 // Configuración avanzada
 const adConfig = {
-  interval: 1 * 60 * 1000, // 1 minuto (ajustable)
+  interval: 5 * 60 * 1000, // 1 minuto (ajustable)
   duration: 20000, // 20 segundos
   videoAds: [
     "assets/videos/anuncio1.webm",

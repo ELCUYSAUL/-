@@ -6,13 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
-// Elimina esta línea de app.js:
-// let currentSale = {
-//     items: [],
-//     total: 0
-// };
-
-// Y reemplázala con:
 // Inicializar currentSale como objeto vacío
 let currentSale = {
     items: [],
@@ -104,7 +97,8 @@ function loadProducts() {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
-            <img src="${product.image || 'assets/images/default-product.png'}" alt="${product.name}" class="product-image">
+            <img src="${product.image || 'assets/images/default-product.png'}" alt="${product.name}" 
+                 class="product-image" style="width: 150px; height: 150px; object-fit: cover;">
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-price">$${product.price.toFixed(2)}</p>
@@ -142,6 +136,9 @@ function openSaleModal(productId) {
     // Configurar modal con datos del producto
     saleProductName.textContent = product.name;
     saleProductImage.src = product.image || 'assets/images/default-product.png';
+    saleProductImage.style.width = '200px';
+    saleProductImage.style.height = '200px';
+    saleProductImage.style.objectFit = 'cover';
     saleProductPrice.textContent = product.price.toFixed(2);
     saleQuantity.value = 1;
     saleTotal.textContent = product.price.toFixed(2);

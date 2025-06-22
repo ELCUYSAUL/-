@@ -4,9 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initSales();
 });
 
+// Variable para llevar el conteo de intentos
+let verificationAttempts = 0;
+const MAX_ATTEMPTS = 5;
+
 // Inicializar el módulo de ventas
-// Reemplazar todo el código de initSales() con:
 function initSales() {
+    // Verificar si hay un usuario autenticado
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        console.error('Usuario no autenticado. No se puede inicializar el módulo de ventas.');
+        return;
+    }
+
     // Escuchar evento cuando se agrega un producto desde products.js
     document.addEventListener('productAddedToSale', (e) => {
         const { product, quantity } = e.detail;
@@ -38,10 +48,45 @@ function initSales() {
     });
 
     // Inicializar botón de finalizar venta
-    document.getElementById('complete-sale-btn')?.addEventListener('click', completeCurrentSale);
+    document.getElementById('complete-sale-btn')?.addEventListener('click', handleCompleteSale);
     
     // Cargar historial al inicio
     loadSalesHistory();
+}
+
+// Función para manejar el completado de venta con límite de intentos
+function handleCompleteSale() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('Por favor inicie sesión para completar la venta');
+        return;
+    }
+
+    if (currentSale.items.length === 0) {
+        alert('No hay items en la venta');
+        return;
+    }
+
+    if (verificationAttempts >= MAX_ATTEMPTS) {
+        alert(`Has excedido el número máximo de intentos (${MAX_ATTEMPTS}). Por favor reinicia la página.`);
+        return;
+    }
+
+    verificationAttempts++;
+    completeCurrentSale();
+}
+
+// Función auxiliar para obtener el usuario actual con validación
+function getCurrentUser() {
+    try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || !currentUser.id) {
+            return null;
+        }
+        return currentUser;
+    } catch (e) {
+        return null;
+    }
 }
 
 // Objeto para manejar la venta actual
@@ -83,6 +128,11 @@ function updateSaleDisplay() {
     const saleItemsList = document.getElementById('sale-items-list');
     const saleTotalAmount = document.getElementById('sale-total-amount');
     const completeSaleBtn = document.getElementById('complete-sale-btn');
+
+    if (!saleItemsList || !saleTotalAmount || !completeSaleBtn) {
+        console.error('Elementos del DOM para mostrar la venta no encontrados');
+        return;
+    }
 
     // Limpiar lista actual
     saleItemsList.innerHTML = '';
@@ -158,7 +208,12 @@ function completeCurrentSale() {
         return;
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        alert('Por favor inicie sesión para completar la venta');
+        return;
+    }
+
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
 
     // Agregar cada item al historial de ventas
@@ -214,9 +269,22 @@ function showSaleSummary(sale) {
 
 // Cargar historial de ventas
 function loadSalesHistory() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        const reportResults = document.getElementById('report-results');
+        if (reportResults) {
+            reportResults.innerHTML = '<p class="no-sales">Por favor inicie sesión para ver el historial</p>';
+        }
+        return;
+    }
+
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
     const reportResults = document.getElementById('report-results');
+
+    if (!reportResults) {
+        console.error('Elemento para mostrar reportes no encontrado');
+        return;
+    }
 
     // Filtrar ventas del usuario actual
     const userSales = sales.filter(sale => sale.userId === currentUser.id);
